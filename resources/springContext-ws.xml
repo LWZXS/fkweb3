@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:cxf="http://cxf.apache.org/core"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://cxf.apache.org/jaxws
+		http://cxf.apache.org/schemas/jaxws.xsd
+		http://cxf.apache.org/core
+		http://cxf.apache.org/schemas/core.xsd">
+		<!--
+		http://www.springframework.org/beans/factory/xml
+		http://www.springframework.org/beans/factory/xml/spring-beans-4.0.xsd
+		classpath:/org/springframework/beans/factory/xml/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		-->
+	<!-- Import Apache CXF Bean Definition -->
+	<!-- CXF3.0以上，已经不需要引用下面三个xml文件了
+	<import resource="classpath:META-INF/cxf/cxf.xml"/>
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+	-->
+	<cxf:bus>
+		<cxf:inInterceptors>
+			<ref bean="com.longshine.cams.service.inintercept"/>
+		</cxf:inInterceptors>
+		<!-- cxf:inFaultInterceptors>
+			<ref bean="GZIPStream"/>
+		</cxf:inFaultInterceptors-->
+		<cxf:outInterceptors>
+			<ref bean="com.longshine.cams.service.outintercept"/>
+		</cxf:outInterceptors>
+		<!--cxf:outFaultInterceptors>
+			<ref bean="GZIPStream"/>
+		</cxf:outFaultInterceptors-->
+	</cxf:bus>
+	<!-- 数据源配置 -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<!-- Tomcat生产环境下配置有效 -->
+				<!--
+				java -cp ./deployresource/druid-1.0.9.jar com.alibaba.druid.filter.config.ConfigTools 密码
+				<value>file:E:\\dev\\cams\\fkinterfaces\\deployresource/db.property</value>
+				-->
+				<!-- 以下配置用于进行测试用例时有效 -->
+				<value>file:../conf/db.property</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="datasource_gdcams2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<!-- 基本属性 url、user、password -->
+		<property name="driverClassName" value="${gdcams2.jdbc.driverclass}" />
+		<property name="url" value="${gdcams2.jdbc.url}" />
+		<property name="username" value="${gdcams2.jdbc.username}" />
+		<!-- 密码无需加密时，使用下面的配置-->
+		<property name="password" value="${gdcams2.jdbc.password}" />
+		
+		<!-- 密码配置为加密时，使用下面的配置 -->
+		<!-- <property name="passwordCallback" ref="dbPasswordCallback" /> -->
+		<property name="filters" value="stat,config" />
+		<property name="connectionProperties" value="password=${gdcams2.jdbc.password}" />
+		<!-- 密码配置为加密时，使用上面的配置 -->
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="${gdcams2.jdbc.initialSize}" />
+		<property name="minIdle" value="${gdcams2.jdbc.minIdle}" />
+		<property name="maxActive" value="${gdcams2.jdbc.maxActive}" />
+		<!-- 配置获取连接等待超时的时间，单位毫秒 -->
+		<property name="maxWait" value="300000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="300000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="1800000" />
+		<property name="validationQuery" value="${gdcams2.jdbc.validationQuery}" />
+		<!-- 申请连接的时候检测 -->
+		<property name="testWhileIdle" value="true" />
+		<!-- 申请连接时执行validationQuery检测连接是否有效，配置为true会降低性能 -->
+		<property name="testOnBorrow" value="false" />
+		<!-- 归还连接时执行validationQuery检测连接是否有效，配置为true会降低性能  -->
+		<property name="testOnReturn" value="false" />
+		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="${gdcams2.jdbc.maxPoolPreparedStatementPerConnectionSize}" />
+		<!-- 配置监控统计拦截的filters，去掉后监控界面sql无法统计 -->
+		<!-- 考虑到密码加密配置，将stat过滤器最佳到密码加密配置中去
+		<property name="filters" value="stat" />
+		-->
+	</bean>
+	<bean id="com.longshine.cams.service.inintercept" class="com.longshine.cams.service.InputIntercepter"/>
+	<bean id="com.longshine.cams.service.outintercept" class="com.longshine.cams.service.OutputIntercepter"/>
+	
+</beans>

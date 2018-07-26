@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<properties>
+		<property>
+			<name>cams.fk.system.cellid</name>
+			<value>FKS1</value>
+			<description>配置节点的标识，集群部署时，节点唯一</description>
+		</property>
+		<property>
+			<name>cams.fk.system.oversecs</name>
+			<value>900</value>
+			<description>配置系统通用的接口超时时间，单位：秒</description>
+			</property>
+		<property>
+			<name>cams.fk.system.oversecsdelay</name>
+			<value>10</value>
+			<description>配置系统通用接口超时时间同步延时，单位：秒</description>
+		</property>
+		<property>
+			<name>cams.fk.system.logwsfile</name>
+			<value>1</value>
+			<description>配置是否需要将WebService交互内容生成为本地文件，保存用于调试查看，文件名规则是“任务标识.send/recv.xml”</description>
+		</property>
+		<property>
+			<name>cams.fk.task.gycs.bh.rule</name>
+			<value>1</value>
+			<description>取值含义如下：0-涉及表号的位置使用12个0代替，1-使用表地址代替，不足12位时，前补0</description>
+		</property>
+		<property>
+			<name>cams.fk.task.callserver.addr</name>
+			<!-->value>http://192.168.10.184:9021/</value -->
+			<value>http://10.150.23.35:7010/PMS_WS/services/</value>
+			<description>费控服务异步请求回调接口地址、主动调用对端服务的接口服务地址配置，格式为：http://ip:port/pmis/fkservice</description>
+		</property>
+		<property>
+			<name>cams.fk.task.taskserver.addr</name>
+			<value>192.168.1.154:9390</value>
+			<description>费控服务调用TaskServer的服务配置，格式为：IP:PORT</description>
+		</property>
+		<property>
+			<name>cams.fk.task.mmjserver.jl.addr</name>
+			<value>http://192.168.35.102:8080/MeteringSerice/services/</value>
+			<description>费控服务调用计量密码机的服务配置，格式为：http://ip:port/mmj/fkservice</description>
+		</property>
+		<property>
+			<name>cams.fk.task.mmj.runstatus</name>
+			<value>release</value>
+			<description>费控服务调用密码机的运行状态，格式为：debug:release</description>
+		</property>
+		<property>
+			<name>cams.fk.task.mmjserver.yx.addr</name>
+			<value>http://192.168.20.37:8018/</value>
+			<description>费控服务调用营销密码机的服务配置，格式为：http://ip:port/mmj/fkservice</description>
+		</property>
+		<property>
+			<name>cams.fk.task.gycs.baudrate</name>
+			<value>8</value>
+			<description>电表通信通用波特率配置：6-9600</description>
+		</property>
+		<property>
+			<name>cams.fk.task.citylist</name>
+			<value>0301,0302,0304,0305,0306,0307,0308,0309,0312,0313,0314,0317,0318,0319,0320,0351,0352,0353</value>
+			<description>配置前四位地市代码校验编码列表，多个地市之间使用半角逗号分隔，如：0301,0302,0304,0305</description>
+		</property>
+	</properties>
+	<interfaces>
+		<interface>
+			<function>I_FK_JLZDH_ZLFKYHFS</function>
+			<zlbm>ZLFKYHFS</zlbm>
+			<name>增量费控用户发送</name>
+			<mode>block</mode>
+			<class_parse>com.longshine.cams.fk.interfaces.FK_JLZDH_ZLFKYHFS.Parse_FK_JLZDH_ZLFKYHFS</class_parse>
+			<class_perform>com.longshine.cams.fk.interfaces.FK_JLZDH_ZLFKYHFS.Perform_FK_JLZDH_ZLFKYHFS</class_perform>
+		</interface>
+		<interface>
+			<function>I_FK_JLZDH_FKYCSFRZ</function>
+			<call_func>I_FK_JLZDH_HQFKYCSFRZJG</call_func>
+			<zlbm>FKYCSFRZ</zlbm>
+			<name>费控远程身份认证</name>
+			<mode>unblock</mode>
+			<!-- oversecs>600</oversecs -->
+			<class_parse>com.longshine.cams.fk.interfaces.FK_JLZDH_FKYCSFRZ.Parse_FK_JLZDH_FKYCSFRZ</class_parse>
+			<class_perform>com.longshine.cams.fk.interfaces.FK_JLZDH_FKYCSFRZ.Perform_FK_JLZDH_FKYCSFRZ</class_perform>
+		</interface>
+		<!--梁清淮 I-16-008-01.本地费控用户远程充值 2016-07-10新增1 -->
+		<interface>
+			<function>I_FK_JLZDH_YKYHYCCZ</function>
+			<call_func>I_FK_JLZDH_FHFKSJXFZXJG</call_func>
+			<zlbm>YKYHYCCZ</zlbm>
+			<name>本地费控用户远程充值</name>
+			<mode>unblock</mode>
+			<!-- oversecs>600</oversecs -->
+			<class_parse>com.longshine.cams.fk.interfaces.FK_JLZDH_YKYHYCCZ.Parse_FK_JLZDH_YKYHYCCZ</class_parse>
+			<class_perform>com.longshine.cams.fk.interfaces.FK_JLZDH_YKYHYCCZ.Perform_FK_JLZDH_YKYHYCCZ</class_perform>
+		</interface>
+		<!--何宽裕 I-16-011-02.本地费控用户电价参数更新 2016-07-10新增 -->
+		<interface>
+			<function>I_FK_JLZDH_FKYHDJCSGX</function>
+			<call_func>I_FK_JLZDH_FHFKSJXFZXJG</call_func>
+			<zlbm>FKYHDJCSGX</zlbm>
+			<name>本地费控用户电价参数更新</name>
+			<mode>unblock</mode>
+			<!-- oversecs>600</oversecs -->
+			<class_parse>com.longshine.cams.fk.interfaces.FK_JLZDH_FKYHDJCSGX.Parse_FK_JLZDH_FKYHDJCSGX</class_parse>
+			<class_perform>com.longshine.cams.fk.interfaces.FK_JLZDH_FKYHDJCSGX.Perform_FK_JLZDH_FKYHDJCSGX</class_perform>
+		</interface>
+		<!--何宽裕 I-16-016-01.专变费控用户远程控制 2016-07-11新增 -->
+		<interface>
+			<function>I_FK_JLZDH_ZBFKYHYCKZ</function>
+			<call_func>I_FK_JLZDH_FHFKSJXFZXJG</call_func>
+			<zlbm>ZBFKYHYCKZ</zlbm>
+			<name>专变费控用户远程控制</name>
+			<mode>unblock</mode>
+			<!-- oversecs>600</oversecs -->
+			<class_parse>com.longshine.cams.fk.interfaces.FK_JLZDH_ZBFKYHYCKZ.Parse_FK_JLZDH_ZBFKYHYCKZ</class_parse>
+			<class_perform>com.longshine.cams.fk.interfaces.FK_JLZDH_ZBFKYHYCKZ.Perform_FK_JLZDH_ZBFKYHYCKZ</class_perform>
+		</interface>
+	   <!--梁清淮 I-16-013-02.本地费控用户参数更新  2016-07-11新增-->
+	   <interface>
+	       <function>I_FK_JLZDH_FKYHCSGX</function>
+	       <call_func>I_FK_JLZDH_FHFKSJXFZXJG</call_func>
+	       <zlbm>FKYHCSGX</zlbm>
+	       <name>本地费控用户参数更新</name>
+	       <mode>unblock</mode>
+	       <!-- oversecs>600</oversecs-->
+	       <class_parse>com.longshine.cams.fk.interfaces.FK_JLZDH_FKYHCSGX.Parse_FK_JLZDH_FKYHCSGX</class_parse>
+	       <class_perform>com.longshine.cams.fk.interfaces.FK_JLZDH_FKYHCSGX.Perform_FK_JLZDH_FKYHCSGX</class_perform>
+	   </interface>		
+		<interface>
+			<function>I_FK_JLZDH_SJHC</function>
+			<call_func>I_FK_JLZDH_HQSJHCJG</call_func>
+			<zlbm>SJHC</zlbm>
+			<name>电能表安全数据回抄</name>
+			<mode>unblock</mode>
+			<!--oversecs>600</oversecs -->
+			<class_parse>com.longshine.cams.fk.interfaces.FK_JLZDH_SJHC.Parse_FK_JLZDH_SJHC</class_parse>
+			<class_perform>com.longshine.cams.fk.interfaces.FK_JLZDH_SJHC.Perform_FK_JLZDH_SJHC</class_perform>
+		</interface>
+		<!-- 梁清淮 I-16-015-02.低压费控用户远程控制 -->
+		<interface>
+			<function>I_FK_JLZDH_DYFKYHYCKZ</function>
+			<call_func>I_FK_JLZDH_HQDYFKYHYCKZZXJG</call_func>
+			<zlbm>DYFKYHYCKZ</zlbm>
+			<name>低压费控用户远程控制</name>
+			<mode>unblock</mode>
+			<!-- oversecs>600</oversecs -->
+			<class_parse>com.longshine.cams.fk.interfaces.FK_JLZDH_DYFKYHYCKZ.Parse_FK_JLZDH_DYFKYHYCKZ</class_parse>
+			<class_perform>com.longshine.cams.fk.interfaces.FK_JLZDH_DYFKYHYCKZ.Perform_FK_JLZDH_DYFKYHYCKZ</class_perform>
+		</interface>   		
+		<interface>
+			<function>I_FK_JLZDH_FKYHYCQBTF</function>
+			<call_func>I_FK_JLZDH_FHFKSJXFZXJG</call_func>
+			<zlbm>FKYHYCQBTF</zlbm>
+			<name>本地费控用户远程钱包退费 </name>
+			<mode>unblock</mode>
+			<!-- oversecs>600</oversecs -->
+			<class_parse>com.longshine.cams.fk.interfaces.FK_JLZDH_FKYHYCQBTF.Parse_FK_JLZDH_FKYHYCQBTF</class_parse>
+			<class_perform>com.longshine.cams.fk.interfaces.FK_JLZDH_FKYHYCQBTF.Perform_FK_JLZDH_FKYHYCQBTF</class_perform>
+		</interface>
+		<!--何宽裕 I-16-019-01.获取用电信息 2016-07-12新增 -->
+		<interface>
+			<function>I_FK_JLZDH_HQYDXX</function>
+			<call_func>I_FK_JLZDH_HQYDXXFHJG</call_func>
+			<zlbm>HQYDXX</zlbm>
+			<name>获取用电信息</name>
+			<mode>unblock</mode>
+			<!-- oversecs>600</oversecs -->
+			<class_parse>com.longshine.cams.fk.interfaces.FK_JLZDH_HQYDXX.Parse_FK_JLZDH_HQYDXX</class_parse>
+			<class_perform>com.longshine.cams.fk.interfaces.FK_JLZDH_HQYDXX.Perform_FK_JLZDH_HQYDXX</class_perform>
+		</interface>
+		<!--周嘉俊 I-16-007-02.本地费控用户远程开户 201600706新增 -->
+		<interface>
+			<function>I_FK_JLZDH_FKYHYCKH</function>
+			<call_func>I_FK_JLZDH_FHFKSJXFZXJG</call_func>
+			<zlbm>FKYHYCKH</zlbm>
+			<name>费控远程开户</name>
+			<mode>unblock</mode>
+			<!-- oversecs>600</oversecs -->
+			<class_parse>com.longshine.cams.fk.interfaces.FK_JLZDH_FKYHYCKH.Parse_FK_JLZDH_FKYHYCKH</class_parse>
+			<class_perform>com.longshine.cams.fk.interfaces.FK_JLZDH_FKYHYCKH.Perform_FK_JLZDH_FKYHYCKH</class_perform>
+		</interface>
+		<!--周嘉俊 I-16-010-02.费控模式本地切换远程 201600711新增 -->
+		<interface>
+			<function>I_FK_JLZDH_FKMSBDQHYC</function>
+			<call_func>I_FK_JLZDH_FHFKSJXFZXJG</call_func>
+			<zlbm>FKMSBDQHYC</zlbm>
+			<name>费控远程切换</name>
+			<mode>unblock</mode>
+			<!-- oversecs>600</oversecs -->
+			<class_parse>com.longshine.cams.fk.interfaces.FK_JLZDH_FKMSBDQHYC.Parse_FK_JLZDH_FKMSBDQHYC</class_parse>
+			<class_perform>com.longshine.cams.fk.interfaces.FK_JLZDH_FKMSBDQHYC.Perform_FK_JLZDH_FKMSBDQHYC</class_perform>
+		</interface> 
+		<!-- 郭庆贤 低压费控用户远程控制自调用 20180612-->
+		<interface>
+			<function>I_FK_GDCAMS_DYFKYHYCKZ</function>
+			<call_func>I_FK_GDCAMS_HQDYFKYHYCKZZXJG</call_func>
+			<zlbm>GDCAMSDYFKYHYCKZ</zlbm>
+			<name>低压费控用户远程控制自调用</name>
+			<mode>unblock</mode>
+			<!-- oversecs>600</oversecs -->
+			<class_parse>com.longshine.cams.fk.interfaces.FK_GDCAMS_DYFKYHYCKZ.Parse_FK_GDCAMS_DYFKYHYCKZ</class_parse>
+			<class_perform>com.longshine.cams.fk.interfaces.FK_GDCAMS_DYFKYHYCKZ.Perform_FK_GDCAMS_DYFKYHYCKZ</class_perform>
+		</interface>      		
+	</interfaces>
+</configuration>
